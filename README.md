@@ -1,6 +1,6 @@
 # esdpm 
 
-Easy Smart Deployment Manager
+Easy Smart Deployment Manager (Trying pull requests)
 
 
 ## Usage
