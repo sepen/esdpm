@@ -104,8 +104,7 @@ esdpmInit() {
     [ -z ${git_local_dir} ] || [ -z ${git_repo_url} ] && msgUsage
 
     # clone a fresh workingcopy
-    git clone "${git_repo_url}" "${git_tmp_dir}"
-    mv -v "${git_tmp_dir}" "${git_local_dir}"
+    git clone "${git_repo_url}" "${git_local_dir}"
 
     # delete temporary directory
     rm -rf "${git_tmp_dir}"
