@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 export ESDPM_OPTION_DEBUG=0
 export ESDPM_OPTION_VERBOSE=0
