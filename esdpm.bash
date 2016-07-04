@@ -39,8 +39,8 @@ msgUsage() {
     printf "  update  [GIT_LOCAL_DIR]\n"
     printf "  switch  [GIT_LOCAL_DIR] [GIT_REPO_BRANCH]\n"
     printf "  reset   [GIT_LOCAL_DIR] [GIT_REPO_HASH]\n"
-    printf "  status  [GIT_LOCAL_DIR] <-u|-h|-b|--url|--hash|--branch>\n"
-    printf "  avail   [GIT_LOCAL_DIR] <-a|--all>\n"
+    printf "  status  [GIT_LOCAL_DIR] <-u|--uri|-h|--hash|-b|--branch>\n"
+    printf "  avail   [GIT_LOCAL_DIR] <-a|--all|-t|--tags|-b|--branches>\n"
     printf "  log     [GIT_LOCAL_DIR]"
     printf "  env\n"
     printf "\n"
@@ -54,7 +54,7 @@ msgUsage() {
     printf "  $appname switch /var/www/vhosts/test dev-master --verbose\n"
     printf "  $appname reset  /var/www/vhosts/test f8864e8dc63af915b869ffe0ef357c26ccee1470\n"
     printf "  $appname status /var/www/vhosts/test --hash\n"
-    printf "  $appname avail  /var/www/vhosts/test --all\n"
+    printf "  $appname avail  /var/www/vhosts/test --tags\n"
     printf "  $appname log    /var/www/vhosts/test\n"
     printf "  $appname env\n"
     exit 0
@@ -215,6 +215,14 @@ esdpmAvail() {
     cd "${git_local_dir}"
     case "${options}" in
         -a|--all)
+            # get all remote branches and tags available
+            git for-each-ref --sort=-committerdate --format='%(refname)' refs/
+            ;;
+        -t|--tags)
+            # get all remote tags available
+            git for-each-ref --sort=-committerdate --format='%(refname)' refs/tags/ | sed 's|refs/tags/||'
+            ;;
+        -b|--branches)
             # get all remote branches available
             git for-each-ref --sort=-committerdate --format='%(refname)' refs/remotes/ | sed 's|refs/remotes/||'
             ;;
