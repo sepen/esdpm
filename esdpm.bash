@@ -41,6 +41,7 @@ msgUsage() {
     printf "  reset   [GIT_LOCAL_DIR] [GIT_REPO_HASH]\n"
     printf "  status  [GIT_LOCAL_DIR] <-u|-h|-b|--url|--hash|--branch>\n"
     printf "  avail   [GIT_LOCAL_DIR] <-a|--all>\n"
+    printf "  log     [GIT_LOCAL_DIR]"
     printf "  env\n"
     printf "\n"
     printf "Options for all commands:\n"
@@ -212,6 +213,18 @@ esdpmAvail() {
             git for-each-ref --sort=-committerdate --format='%(refname)' refs/heads/ | sed 's|refs/heads/||'
             ;;
     esac
+}
+
+esdpmLog() {
+    msgDebug "${@}"
+
+    local git_local_dir="${1}"
+
+    # check input args
+    [ -z ${git_local_dir} ] && msgUsage
+
+    cd "${git_local_dir}"
+    git log --pretty=oneline
 }
 
 esdpmEnv() {
