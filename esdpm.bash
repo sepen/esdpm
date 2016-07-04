@@ -55,8 +55,15 @@ msgUsage() {
     printf "  $appname reset  /var/www/vhosts/test f8864e8dc63af915b869ffe0ef357c26ccee1470\n"
     printf "  $appname status /var/www/vhosts/test --hash\n"
     printf "  $appname avail  /var/www/vhosts/test --all\n"
+    printf "  $appname log    /var/www/vhosts/test\n"
     printf "  $appname env\n"
     exit 0
+}
+
+checkGitLocalDir() {
+    local git_local_dir="${1}"
+    [ -z ${git_local_dir} ] && msgUsage
+    [ ! -d "${git_local_dir}" ] && msgError "cannot find git_local_dir: '${git_local_dir}'"
 }
 
 parseGlobalOptions() {
@@ -98,14 +105,15 @@ esdpmInit() {
     msgDebug "${@}"
 
     local git_local_dir="${1}"
-    local git_repo_url="${2}"
+    local git_repo_uri="${2}"
     local git_tmp_dir="$(mktemp -d)/$(basename ${git_local_dir})"
 
     # check input args
-    [ -z ${git_local_dir} ] || [ -z ${git_repo_url} ] && msgUsage
+    [ -z ${git_repo_uri} ] && msgUsage
 
     # clone a fresh workingcopy
-    git clone "${git_repo_url}" "${git_local_dir}"
+    git clone "${git_repo_uri}" "${git_local_dir}"
+    git fetch -pta "${git_local_dir}"
 
     # delete temporary directory
     rm -rf "${git_tmp_dir}"
@@ -117,11 +125,11 @@ esdpmUpdate() {
     local git_local_dir="${1}"
 
     # check input args
-    [ -z ${git_local_dir} ] && msgUsage
+    checkGitLocalDir ${git_local_dir}
 
     # update workingcopy
     cd "${git_local_dir}"
-    git fetch -a origin --prune
+    git fetch -pta origin
     git merge origin/$(git rev-parse --abbrev-ref HEAD)
     # if failed then do stash+rebase
     if [ $? -ne 0 ]; then
@@ -138,11 +146,12 @@ esdpmSwitch() {
     local git_repo_branch="${2}"
 
     # check input args
-    [ -z ${git_local_dir} ] || [ -z ${git_repo_branch} ] && msgUsage
+    checkGitLocalDir "${git_local_dir}"
+    [ -z ${git_repo_branch} ] && msgUsage
 
     # switch branch in workingcopy
     cd "${git_local_dir}"
-    git fetch -a origin --prune
+    git fetch -pta origin
     git checkout "${git_repo_branch}"
     # if failed then get remote branch locally and checkout
     if [ $? -ne 0 ]; then
@@ -158,7 +167,8 @@ esdpmReset() {
     local git_repo_hash="${2}"
 
     # check input args
-    [ -z ${git_local_dir} ] || [ -z ${git_repo_hash} ] && msgUsage
+    checkGitLocalDir "${git_local_dir}"
+    [ -z ${git_repo_hash} ] && msgUsage
 
     # reset branch in workingcopy
     cd "${git_local_dir}"
@@ -173,20 +183,20 @@ esdpmStatus() {
     local git_repo_branch git_repo_hash
 
     # check input args
-    [ -z ${git_local_dir} ] && msgUsage
+    checkGitLocalDir "${git_local_dir}"
 
     # get status from workingcopy
     cd "${git_local_dir}"
-    git_repo_url="$(git config --get remote.origin.url | sed 's|://.*@|://|g')"
+    git_repo_uri="$(git config --get remote.origin.url | sed 's|://.*@|://|g')"
     git_repo_branch="$(git rev-parse --abbrev-ref HEAD)"
     git_repo_hash="$(git rev-parse HEAD)"
 
     case "${options}" in
-      -u|--url) echo "${git_repo_url}" ;;
+      -u|--uri) echo "${git_repo_uri}" ;;
       -b|--branch) echo "${git_repo_branch}" ;;
       -h|--hash) echo "${git_repo_hash}" ;;
       *)
-         printf "url:     %s\n" "${git_repo_url}"
+         printf "uri:     %s\n" "${git_repo_uri}"
          printf "branch:  %s\n" "${git_repo_branch}"
          printf "hash:    %s\n" "${git_repo_hash}"
          ;;
@@ -200,7 +210,7 @@ esdpmAvail() {
     local options="${2}"
 
     # check input args
-    [ -z ${git_local_dir} ] && msgUsage
+    checkGitLocalDir "${git_local_dir}"
 
     cd "${git_local_dir}"
     case "${options}" in
@@ -221,7 +231,7 @@ esdpmLog() {
     local git_local_dir="${1}"
 
     # check input args
-    [ -z ${git_local_dir} ] && msgUsage
+    checkGitLocalDir "${git_local_dir}"
 
     cd "${git_local_dir}"
     git log --pretty=oneline
