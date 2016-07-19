@@ -130,13 +130,7 @@ esdpmUpdate() {
   # update workingcopy
   cd "${git_local_dir}"
   git fetch -pta origin
-  git merge origin/$(git rev-parse --abbrev-ref HEAD)
-  # if failed then do stash+rebase
-  if [ $? -ne 0 ]; then
-    git stash
-    git rebase origin/$(git rev-parse --abbrev-ref HEAD)
-    git stash apply
-  fi
+  git pull origin || msgError "failed to update"
 }
 
 esdpmSwitch() {
