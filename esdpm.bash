@@ -63,7 +63,7 @@ msgUsage() {
 checkGitLocalDir() {
   local git_local_dir="${1}"
   [ -z ${git_local_dir} ] && msgUsage
-  [ ! -d "${git_local_dir}" ] && msgError "cannot find git_local_dir: '${git_local_dir}'"
+  [ ! -d "${git_local_dir}/.git" ] && msgError "cannot find git_local_dir: '${git_local_dir}'"
 }
 
 parseGlobalOptions() {
