@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+#
+# /var/www/sites/sample.domain
+#
+
+_pre-init() {
+    echo "-- running hook: _pre-init"
+    # put your commands here
+}
+
+_init() {
+    echo "-- running hook: _init"
+    # put your commands here
+}
+
+_pre-update() {
+    echo "-- running hook: _update"
+    # put your commands here
+}
+
+_update() {
+    echo "-- running hook: _update"
+    # put your commands here
+}
+
+_switch() {
+    echo "-- running hook: _switch"
+    # put your commands here
+}
+
+_reset() {
+    echo "-- running hook: _reset"
+    # put your commands here
+}
+
+# End of file
