@@ -20,4 +20,4 @@ install -D -m 0755 esdpm ${BINDIR}/esdpm
 rm -f esdpm
 echo "Installing data files to ${DATADIR}"
 install -d -m 0755 ${DATADIR}
-cp hooks ${DATADIR}
+cp -r hooks ${DATADIR}
