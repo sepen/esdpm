@@ -113,6 +113,7 @@ esdpmInit() {
 
   # clone a fresh workingcopy
   git clone "${git_repo_uri}" "${git_local_dir}"
+  cd "${git_local_dir}"
   git fetch -pta "${git_local_dir}"
 
   # delete temporary directory
